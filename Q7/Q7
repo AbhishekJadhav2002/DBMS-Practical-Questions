@@ -1,0 +1,184 @@
+mysql> create database_question_7
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'database_question_7' at line 1
+mysql> create database question_7;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use question_7
+Database changed
+mysql> create table project(
+    -> pno int,
+    -> pname varchar(255),
+    -> cheif varchar(255));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> create table employee(
+    -> eno int,
+    -> ename varchar(255));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> alter table employee add primary key(eno);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> \T Q11
+mysql> use question_7;
+Database changed
+mysql> show tables;
++----------------------+
+| Tables_in_question_7 |
++----------------------+
+| employee             |
+| logtab               |
+| parts                |
+| project              |
++----------------------+
+4 rows in set (0.00 sec)
+
+mysql> desc employee;
++-------+--------------+------+-----+---------+-------+
+| Field | Type         | Null | Key | Default | Extra |
++-------+--------------+------+-----+---------+-------+
+| eno   | int          | NO   | PRI | NULL    |       |
+| ename | varchar(255) | YES  |     | NULL    |       |
++-------+--------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> desc project;
++-------+--------------+------+-----+---------+-------+
+| Field | Type         | Null | Key | Default | Extra |
++-------+--------------+------+-----+---------+-------+
+| pno   | int          | YES  |     | NULL    |       |
+| pname | varchar(255) | YES  |     | NULL    |       |
+| cheif | varchar(255) | YES  |     | NULL    |       |
++-------+--------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> create table assigned(
+    -> eno int,
+    -> pno int);
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> insert into project values (1,"dbms","sdaf"),(2,"pr2","weeq"),(3,"pr3","zxc");
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> insert into employee values(1,"Mokshad"),(2,"Vaibhav"),(3,"Ajju"),(4,"Soham"),(5,"Apoorva");
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> insert into assigned values(1,1),(2,1),(3,2),(4,2),(5,1);
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from employee left join assigned on employee.eno=assigned.eno right join project on project.pno=assigned.pno;
++------+---------+------+------+------+-------+-------+
+| eno  | ename   | eno  | pno  | pno  | pname | cheif |
++------+---------+------+------+------+-------+-------+
+|    1 | Mokshad |    1 |    1 |    1 | dbms  | sdaf  |
+|    2 | Vaibhav |    2 |    1 |    1 | dbms  | sdaf  |
+|    5 | Apoorva |    5 |    1 |    1 | dbms  | sdaf  |
+|    3 | Ajju    |    3 |    2 |    2 | pr2   | weeq  |
+|    4 | Soham   |    4 |    2 |    2 | pr2   | weeq  |
+| NULL | NULL    | NULL | NULL |    3 | pr3   | zxc   |
++------+---------+------+------+------+-------+-------+
+6 rows in set (0.00 sec)
+
+mysql> select * from employee left join assigned on employee.eno=assigned.eno right join project on project.pno=assigned.pno group by pname;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'question_7.employee.eno' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> select count(*) from employee left join assigned on employee.eno=assigned.eno right join project on project.pno=assigned.pno group by pname;
++----------+
+| count(*) |
++----------+
+|        3 |
+|        2 |
+|        1 |
++----------+
+3 rows in set (0.00 sec)
+
+mysql> select count(*),pname from employee left join assigned on employee.eno=assigned.eno right join project on project.pno=assigned.pno group by pname;
++----------+-------+
+| count(*) | pname |
++----------+-------+
+|        3 | dbms  |
+|        2 | pr2   |
+|        1 | pr3   |
++----------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select count(*),pname from employee left join assigned on employee.eno=assigned.eno left join project on project.pno=assigned.pno group by pname;
++----------+-------+
+| count(*) | pname |
++----------+-------+
+|        3 | dbms  |
+|        2 | pr2   |
++----------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select * from employee left join assigned on employee.eno=assigned.eno left join project on project.pno=assigned.pno where pname="pr2";
++-----+-------+------+------+------+-------+-------+
+| eno | ename | eno  | pno  | pno  | pname | cheif |
++-----+-------+------+------+------+-------+-------+
+|   3 | Ajju  |    3 |    2 |    2 | pr2   | weeq  |
+|   4 | Soham |    4 |    2 |    2 | pr2   | weeq  |
++-----+-------+------+------+------+-------+-------+
+2 rows in set (0.01 sec)
+
+mysql> select * from employee left join assigned on employee.eno=assigned.eno left join project on project.pno=assigned.pno where pname="dbms";
++-----+---------+------+------+------+-------+-------+
+| eno | ename   | eno  | pno  | pno  | pname | cheif |
++-----+---------+------+------+------+-------+-------+
+|   1 | Mokshad |    1 |    1 |    1 | dbms  | sdaf  |
+|   2 | Vaibhav |    2 |    1 |    1 | dbms  | sdaf  |
+|   5 | Apoorva |    5 |    1 |    1 | dbms  | sdaf  |
++-----+---------+------+------+------+-------+-------+
+3 rows in set (0.00 sec)
+
+mysql> delimiter ..
+mysql> delimiter //
+mysql> create trigger delup before delete on employee for each row
+    -> begin
+    -> delete from assigned where eno = old.eno;
+    -> end //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+mysql> delete from employee where eno=5;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from employee;
++-----+---------+
+| eno | ename   |
++-----+---------+
+|   1 | Mokshad |
+|   2 | Vaibhav |
+|   3 | Ajju    |
+|   4 | Soham   |
++-----+---------+
+4 rows in set (0.00 sec)
+
+mysql> select * from assgined;
+ERROR 1146 (42S02): Table 'question_7.assgined' doesn't exist
+mysql> show tables;
++----------------------+
+| Tables_in_question_7 |
++----------------------+
+| assigned             |
+| employee             |
+| logtab               |
+| parts                |
+| project              |
++----------------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from assigned;
++------+------+
+| eno  | pno  |
++------+------+
+|    1 |    1 |
+|    2 |    1 |
+|    3 |    2 |
+|    4 |    2 |
++------+------+
+4 rows in set (0.00 sec)
+
